@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="ThreeVertexConnected">
+    <output-path>$PROJECT_DIR$/out/artifacts/ThreeVertexConnected</output-path>
+    <root id="archive" name="ThreeVertexConnected.jar">
+      <element id="module-output" name="ThreeVertexConnected" />
+    </root>
+  </artifact>
+</component>

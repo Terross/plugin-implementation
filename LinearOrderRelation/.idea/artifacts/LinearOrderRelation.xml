@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="LinearOrderRelation">
+    <output-path>$PROJECT_DIR$/out/artifacts/LinearOrderRelation</output-path>
+    <root id="archive" name="LinearOrderRelation.jar">
+      <element id="module-output" name="LinearOrderRelation" />
+    </root>
+  </artifact>
+</component>

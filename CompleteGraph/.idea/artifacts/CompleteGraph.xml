@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="CompleteGraph">
+    <output-path>$PROJECT_DIR$/out/artifacts/CompleteGraph</output-path>
+    <root id="archive" name="CompleteGraph.jar">
+      <element id="module-output" name="CompleteGraph" />
+    </root>
+  </artifact>
+</component>

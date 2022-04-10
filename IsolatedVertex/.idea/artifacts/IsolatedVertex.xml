@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="IsolatedVertex">
+    <output-path>$PROJECT_DIR$/out/artifacts/IsolatedVertex</output-path>
+    <root id="archive" name="IsolatedVertex.jar">
+      <element id="module-output" name="IsolatedVertex" />
+    </root>
+  </artifact>
+</component>
