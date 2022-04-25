@@ -1,17 +1,14 @@
 import com.mathsystem.api.graph.model.Edge;
 import com.mathsystem.api.graph.model.Graph;
-import com.mathsystem.domain.plugin.plugintype.GraphProperty;
+import com.mathsystem.domain.plugin.plugintype.GraphCharacteristic;
 
 import java.util.*;
 
-public class RegularGraph implements GraphProperty {
+public class Degree3 implements GraphCharacteristic {
     @Override
-    public boolean execute(Graph graph) {
-        if (graph.getVertexCount() == 0) {
-            return false;
-        }
+    public Integer execute(Graph graph) {
         Map<UUID, Integer> vertexesDegree = new HashMap<>();
-
+        int result = 0;
         var edges = graph.getEdges();
         List<Edge> newEdges = new ArrayList<>();
 
@@ -29,13 +26,12 @@ public class RegularGraph implements GraphProperty {
                 vertexesDegree.put(vertex, 1);
             }
         }
-        Integer vertexDegree = vertexesDegree.get(edges.get(0).getFromV());
+
         for (Integer degree: vertexesDegree.values()) {
-            if (!degree.equals(vertexDegree)) {
-                return false;
+            if (degree == 3) {
+                result++;
             }
         }
-
-        return true;
+        return result;
     }
 }

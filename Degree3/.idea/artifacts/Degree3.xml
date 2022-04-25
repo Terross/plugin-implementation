@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Degree3">
+    <output-path>$PROJECT_DIR$/out/artifacts/Degree3</output-path>
+    <root id="archive" name="Degree3.jar">
+      <element id="module-output" name="Degree3" />
+    </root>
+  </artifact>
+</component>
