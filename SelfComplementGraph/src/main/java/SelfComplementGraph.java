@@ -3,10 +3,7 @@ import com.mathsystem.api.graph.model.Graph;
 import com.mathsystem.api.graph.model.Vertex;
 import com.mathsystem.domain.plugin.plugintype.GraphProperty;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 public class SelfComplementGraph implements GraphProperty {
@@ -19,7 +16,6 @@ public class SelfComplementGraph implements GraphProperty {
 
     public static class GraphMatrix {
         private final Integer[][] matrix;
-
 
         public GraphMatrix(Graph graph) {
             int vertexCount = graph.getVertexCount();
@@ -66,15 +62,14 @@ public class SelfComplementGraph implements GraphProperty {
         }
 
         public GraphMatrix getComplementGraph() {
-            Integer[][] complementMatrix = new Integer[matrix.length][matrix.length];
-            for (int row = 0; row < matrix.length; row++) {
-                System.arraycopy(matrix[row], 0, complementMatrix[row], 0, matrix.length);
-            }
-            this.matrix.clone();
+            Integer[][] complementMatrix = clone(matrix);
+
             for (int row = 0; row < complementMatrix.length; row++) {
                 for (int col = 0; col < complementMatrix.length; col++) {
-                    if (complementMatrix[row][col] == 0 && row != col) complementMatrix[row][col] = 1; // Если 0 не на диагонали, то 1
-                    else if (complementMatrix[row][col] > 0) complementMatrix[row][col] = 0; // Если 1 или больше (есть ребро), то меняем на ноль
+                    if (complementMatrix[row][col] == 0 && row != col)
+                        complementMatrix[row][col] = 1; // Если 0 не на диагонали, то 1
+                    else if (complementMatrix[row][col] > 0)
+                        complementMatrix[row][col] = 0; // Если 1 или больше (есть ребро), то меняем на ноль
                 }
             }
             return new GraphMatrix(complementMatrix);
@@ -82,9 +77,10 @@ public class SelfComplementGraph implements GraphProperty {
 
 
         public boolean isIsomorphic(GraphMatrix graph) {
-            for (int colSwap = 0; colSwap < graph.matrix.length; colSwap++) {
+            List<Integer[][]> matrixShuffles = getMatrixShuffles(matrix);
+            for (Integer[][] matrix : matrixShuffles) { //Цикл по перестановкам столбцов
                 List<List<Integer>> rows = GraphMatrix.toDoubleList(graph.matrix);
-                List<List<Integer>> myRows = GraphMatrix.toDoubleList(matrix, colSwap);
+                List<List<Integer>> myRows = GraphMatrix.toDoubleList(matrix);
                 boolean[] foundPair = new boolean[rows.size()]; // флаги найденных пар
 
 
@@ -106,7 +102,38 @@ public class SelfComplementGraph implements GraphProperty {
             return false;
         }
 
+        private static Integer[][] clone(Integer[][] matrix) {
+            Integer[][] matrixClone = new Integer[matrix.length][matrix[0].length];
+            for (int row = 0; row < matrix.length; row++) {
+                System.arraycopy(matrix[row], 0, matrixClone[row], 0, matrix[0].length);
+            }
+            return matrixClone;
+        }
 
 
+        private List<Integer[][]> getMatrixShuffles(Integer[][] matrix) {
+            List<Integer[][]> matrixShuffles = new ArrayList<>();
+
+            for (int toSwap1 = 0; toSwap1 < matrix.length; toSwap1++) {
+                for (int toSwap2 = 0; toSwap2 < matrix.length; toSwap2++) {
+                    if (toSwap1 > toSwap2) continue;
+                    Integer[][] curMatrix = clone(matrix);
+                    for (int row = 0; row < matrix.length; ++row) {
+                        curMatrix[row] = swap(curMatrix[row], toSwap1, toSwap2);
+                    }
+                    matrixShuffles.add(curMatrix);
+                }
+            }
+
+
+            return matrixShuffles;
+        }
+
+        private <T> T[] swap(T[] row, int toSwap1, int toSwap2) {
+            T tmp = row[toSwap1];
+            row[toSwap1] = row[toSwap2];
+            row[toSwap2] = tmp;
+            return row;
+        }
     }
 }
