@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="OrientedTree">
-    <output-path>$PROJECT_DIR$/out/artifacts/OrientedTree</output-path>
-    <root id="archive" name="OrientedTree.jar">
-      <element id="module-output" name="OrientedTree" />
-    </root>
-  </artifact>
-</component>

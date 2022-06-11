@@ -1,74 +1,105 @@
+import com.mathsystem.api.graph.model.Edge;
 import com.mathsystem.api.graph.model.Graph;
-import com.mathsystem.api.graph.oldmodel.AbstractEdge;
-import com.mathsystem.api.graph.oldmodel.Vertex;
-import com.mathsystem.api.graph.oldmodel.directed.DirectedGraph;
+import com.mathsystem.api.graph.model.Vertex;
 import com.mathsystem.domain.plugin.plugintype.GraphProperty;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class OrientedTree implements GraphProperty {
     @Override
     public boolean execute(Graph graph) {
-        DirectedGraph abstractGraph = new DirectedGraph(graph);
-        var vertexCount = abstractGraph.getVertexCount();
-        var edgeCount = abstractGraph.getEdgeCount();
-
-        ArrayList<AbstractEdge> edges = new ArrayList<>();
-        LinkedList<Vertex> queue = new LinkedList<>();
-        List<Vertex> vertices = abstractGraph.getVertices();
-
-        for (int i = 0; i < abstractGraph.getVertexCount(); i++) {
-            Vertex vertex = vertices.get(i);
-            edges.addAll(vertex.getEdgeList());
+        // Получаем орграф
+        // Орграф - ориентированное дерево, если только один корень (степень входа = 0), а у остальных степень входа = 1
+        Map<UUID, Vertex> vertexes = graph.getVertices();
+        List<Edge> edges = graph.getEdges();
+        Map<UUID, Integer> degrees = new HashMap<>();
+        vertexes.forEach(((vertexId, vertex) -> degrees.put(vertexId, 0))); // инициализация пусто
+        for (Edge edge :
+                edges) {
+            UUID to = edge.getToV();
+            degrees.computeIfPresent(to, (vertexId, degree) -> degree++); // Для каждого входа увеличиваем степень
         }
-        if (vertexCount == 1) return true;
-        if (vertexCount - edgeCount != 1) return false; // Любое дерево с n вершинами содержит n-1 ребро
-        else
-        {
-            var root = 0; //Корень дерева только один
-            int VerRoot = 0;
-            int[] IncomingEdges = new int[vertexCount];
-            for (int i = 0; i < edgeCount; i++) {
-                IncomingEdges[edges.get(i).getW().getIndex()]  += 1;
-            }
-            for (int i = 0; i < vertexCount && root<=1; i++) {
-                if (IncomingEdges[i] > 1) return false; //если
-                else{
-                    if (IncomingEdges[i] == 0) {
-                        root += 1;
-                        VerRoot = i;
-                    }
-                }
-            }
-            if (root == 1)
-            {
-                Vertex start = vertices.get(VerRoot);
-                Vertex v;
-                boolean[] WasVisited = new boolean[vertexCount];
-                WasVisited[start.getIndex()] = true;
-                queue.add(start); //Обход в ширину для проверки связности графа
+        int rootsCount = 0;
+        for (Integer degree :
+                degrees.values()) { // проверяем все степени входа
+            if (degree == 0) rootsCount++; // ничего не входит - корень
+            else if (degree > 1) return false; // входит больше двух - неориентированное дерево
+        }
+        if (rootsCount != 1) return false;
 
-                while (!queue.isEmpty()) {
-                    var firstVertex = queue.pop();
+        return isConnected(graph); // если связен - то дерево, иначе нет
 
-                    for (var edge : firstVertex.getEdgeList()) {//Цикл по смежным вершинам
-                        v = edge.other(firstVertex);
-                        if (!WasVisited[v.getIndex()]) {
-                            WasVisited[v.getIndex()] = true;
-                            queue.add(v);
-                        }
-                    }
-                }
+    }
 
-                for (int i = 0; i < vertexCount; i++) {
-                    if (!WasVisited[i])
-                        return false; //Если граф несвязный значит граф не является ориентированным деревом
-                }
-                return true;
-            }
-            else return false;
+    private static boolean isConnected(Graph graph) { // Проверка на связность
+        GraphMatrix graphMatrix = new GraphMatrix(graph);
+        boolean[] used = new boolean[graphMatrix.matrix.length];
+
+        DFS(graphMatrix, 0, used);
+
+        for (boolean use :
+                used) {
+            if (!use) return false;
+        }
+
+        return true;
+    }
+
+    private static void DFS(GraphMatrix graph, int v, boolean[] used) {
+        used[v] = true;
+        for (int u = 0; u < graph.matrix.length; ++u) {
+            if(graph.matrix[v][u] > 0 && !used[u]) DFS(graph, u, used);
         }
     }
+
+    public static class GraphMatrix {
+        private final Integer[][] matrix;
+
+
+        public GraphMatrix(Graph graph) {
+            int vertexCount = graph.getVertexCount();
+            List<Edge> edges = graph.getEdges();
+            Map<UUID, Vertex> vertexMap = graph.getVertices();
+            List<UUID> vertexes = vertexMap.keySet().stream().toList(); // список из всех вершин
+            matrix = new Integer[vertexCount][vertexCount];
+            for (int row = 0; row < vertexCount; row++) {
+                for (int col = 0; col < vertexCount; col++) {
+                    matrix[row][col] = 0;
+                }
+            }
+            for (Edge e :
+                    edges) {
+                UUID from = e.getFromV();
+                UUID to = e.getToV();
+                int fromIndex = vertexes.indexOf(from);
+                int toIndex = vertexes.indexOf(to);
+                matrix[fromIndex][toIndex]++;
+                matrix[toIndex][fromIndex]++;
+            }
+        }
+
+        public GraphMatrix(Integer[][] matrix) {
+            this.matrix = matrix;
+        }
+
+        private static <T> List<List<T>> toDoubleList(T[][] arr) {
+            return toDoubleList(arr, 0);
+        }
+
+        private static <T> List<List<T>> toDoubleList(T[][] arr, int colSwap) {
+            List<List<T>> res = new LinkedList<>();
+            for (T[] row :
+                    arr) {
+                List<T> rowList = new LinkedList<>();
+                for (int col = 0; col < arr.length; col++) {
+                    T toAdd = row[(col + colSwap) % arr.length];
+                    rowList.add(toAdd);
+                }
+                res.add(rowList);
+            }
+            return res;
+        }
+    }
+
+
 }

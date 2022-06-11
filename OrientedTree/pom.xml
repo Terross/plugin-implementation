@@ -19,8 +19,8 @@
             <artifactId>math-system</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>/home/dmitry/IdeaProjects/math-system-1.0-SNAPSHOT.jar</systemPath>
+            <systemPath>C:/Users/bobyl/Desktop/univer/mlita/graphs/math-system-1_0-SNAPSHOT.jar</systemPath>
         </dependency>
     </dependencies>
-
+    
 </project>
